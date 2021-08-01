@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataService } from '../services/data.service';
 
@@ -8,35 +9,40 @@ import { DataService } from '../services/data.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-
-  //aim = "Welcome to sbt bank"
-  //acnu = "please enter account number"
-  acnum = ""
-  pswd = ""
-  uname =""
-  // users: any = {
-  //   1000: { acno: 1000, username: "ann", password: "ann", balance: 5000 },
-  //   1001: { acno: 1001, username: "paul", password: "paul", balance: 6000 },
-  //   1002: { acno: 1002, username: "chinnu", password: "chinnu", balance: 7000 },
-  //   1003: { acno: 1003, username: "rahul", password: "rahul", balance: 8000 }
-  // }
-  constructor(private ds:DataService, private router:Router) { }
+  // acnum = ""
+  // pswd = ""
+  // uname =""
+  registerForm = this.fb.group({
+    uname: ['', [Validators.required, Validators.pattern('[a-zA-Z]*')]],
+    acnum: ['', [Validators.required, Validators.pattern('[0-9]*'),Validators.minLength(4)]],
+    pswd: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]]
+  })
+  constructor(private ds: DataService, private router: Router, private fb: FormBuilder) { }
 
   ngOnInit(): void {
   }
-  register(){
-    var acnum = this.acnum;
-    var pswd = this.pswd;
-    var uname =this.uname;
-    var result=this.ds.register(acnum,uname,pswd)
-    if(result){
-      alert("registration succesfull")
-      this.router.navigateByUrl("")
+  register() {
+    // if (this.registerForm.get('acnum')?.errors) {
+    //   alert("invalid")
+    // }
+    if (this.registerForm.valid) {
+      var acnum = this.registerForm.value.acnum;
+      var pswd = this.registerForm.value.pswd;
+      var uname = this.registerForm.value.uname;
+      var result = this.ds.register(acnum, uname, pswd)
+      if (result) {
+        alert("registration succesfull")
+        this.router.navigateByUrl("")
+      }
+      else {
+        alert("user already exist")
+        this.router.navigateByUrl("")
+      }
     }
-    else{
-      alert("user already exist")
-      this.router.navigateByUrl("")
+    else {
+      alert("form invalid")
     }
+
     // alert("register clicked")
   }
 

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataService } from '../services/data.service';
 
@@ -12,7 +13,11 @@ export class LoginComponent implements OnInit {
   acnum = "account number please"
   pswd = ""
 
-  constructor(private router: Router, private ds: DataService) { }
+  loginForm = this.fb.group({
+    acnum: ['', [Validators.required, Validators.pattern('[0-9]*'), Validators.minLength(4)]],
+    pswd: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]]
+  })
+  constructor(private router: Router, private ds: DataService, private fb: FormBuilder) { }
 
   ngOnInit(): void {
   }
@@ -25,14 +30,20 @@ export class LoginComponent implements OnInit {
   //   this.pswd = even.target.value;
   // }
   login() {
-    var acnum = this.acnum;
-    var pswd = this.pswd;
+    if (this.loginForm.valid) {
+      var acnum = this.loginForm.value.acnum;
+    var pswd = this.loginForm.value.pswd;
     var result = this.ds.login(acnum, pswd);
 
     if (result) {
       alert("login successfull")
       this.router.navigateByUrl("dashboard")
     }
+    }
+    else{
+      alert("invalid form")
+    }
+    
   }
 }
   // login() {
